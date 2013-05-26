@@ -17,6 +17,8 @@ public class MessageSendingClient {
 			System.out.println("Insert message for server: ");
 			sendMessage(osToServer);
 			osToServer.flush();
+			String answer = StreamUtils.readRequest(clientSideSocket.getInputStream());
+			System.out.println(answer);
 		}
 		System.out.println("Successfully transfered message!");
 	}

@@ -1,7 +1,7 @@
 package de.eva;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -10,9 +10,7 @@ import javax.net.ServerSocketFactory;
 public class ChatServer {
 
 	private static ServerSocketFactory SOCKET_FACTORY = ServerSocketFactory.getDefault();
-	
-	private static final int MESSAGE_BUFFER_SIZE = 4096;
-	private static final String PROTOCOL_MESSAGE_END = "ZZZ";
+	public static final String PROTOCOL_MESSAGE_END = "ZZZ";
 	private static final String CLOSING_MESSAGE = "close()ZZZ";
 	
 	private int port;
@@ -27,31 +25,27 @@ public class ChatServer {
 		System.out.println("Server is listening on port " + port + "...");
 		boolean isShutdown = false;
 		while (!isShutdown) {
-			// JAVA 7!
+			// JAVA 7 try-with resources statement!
 			try (Socket serverSideSocket = serverSocket.accept()) {
 				System.out.println("Incoming client request from " + serverSideSocket.getInetAddress().getHostName() + "!");
-				String request = readRequest(serverSideSocket.getInputStream());
+				String request = StreamUtils.readRequest(serverSideSocket.getInputStream());
 				System.out.println("Request is: " + (request.endsWith(PROTOCOL_MESSAGE_END) ? request.substring(0, request.length() - 3): request));
 				isShutdown = shutDownSignalSend(request);
+				if(isShutdown){
+					request = "sended shutdown message, server will halt now";
+				}
+				sendEcho(serverSideSocket, request);
 			}
-			// serverSideSocket.close	();
 
 			System.out.println("finished read progress");
 		}
 		System.out.println("Server process finished");
 	}
 
-	private String readRequest(InputStream is) throws IOException {
-		String request = "";
-		int countOfReadedBytes = 0;
-		byte[] buffer = new byte[MESSAGE_BUFFER_SIZE];
-		while (request.lastIndexOf(PROTOCOL_MESSAGE_END) == -1
-			   && countOfReadedBytes > -1) {
-			countOfReadedBytes = is.read(buffer, countOfReadedBytes, buffer.length - countOfReadedBytes);	// if Message Buffer Size is exceeded,
-																						// a ArrayOutOfBoundException is thrown
-			request = new String(buffer, "UTF-8");
-		}
-		return request.trim();
+	private void sendEcho(Socket serverSideSocket, String request) throws IOException {
+		PrintWriter writer = new PrintWriter(serverSideSocket.getOutputStream());
+		writer.append("ECHO: " + request);
+		writer.flush();
 	}
 
 	private boolean shutDownSignalSend(String request) {
