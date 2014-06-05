@@ -1,17 +1,17 @@
 package de.eva.server;
 
 import java.io.IOException;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import de.eva.server.pojo.Message;
 import de.eva.sockets.MessageSender;
 
 public class ParallelMessageSender extends Thread {
 
-	private LinkedBlockingQueue<Message> messages;
+	private BlockingQueue<Message> messages;
 
-	public ParallelMessageSender(ChatServer server) {
-		messages = server.getMessages();
+	public ParallelMessageSender(BlockingQueue<Message> messages) {
+		this.messages = messages;
 		this.setDaemon(true);
 	}
 	

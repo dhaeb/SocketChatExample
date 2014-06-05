@@ -32,7 +32,7 @@ public class ChatServer {
 		System.out.println("Server is listening on port " + port + "...");
 		serverSocket = SOCKET_FACTORY.createServerSocket(port);
 		System.out.println("Message Sender has started");
-		new ParallelMessageSender(this).start();
+		new ParallelMessageSender(messages).start();
 		boolean isShutdown = false;
 		while (!isShutdown) {
 			// JAVA 7 try-with resources statement!
