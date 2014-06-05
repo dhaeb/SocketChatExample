@@ -9,6 +9,7 @@ import java.net.UnknownHostException;
 import java.util.Scanner;
 
 import de.eva.StreamUtils;
+import de.eva.server.ChatServer;
 import de.eva.server.pojo.Client;
 import de.eva.server.pojo.Message;
 import de.eva.sockets.MessageSender;
@@ -21,7 +22,7 @@ public class ChatClient {
 
 	static {
 		try {
-			DEFAULT_CLIENT = Client.createClient("server", InetAddress.getLocalHost(), 8081);
+			DEFAULT_CLIENT = Client.createClient("server", InetAddress.getLocalHost(), ChatServer.PORT);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}

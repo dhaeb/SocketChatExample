@@ -15,6 +15,7 @@ import de.eva.server.pojo.Message;
 
 public class ChatServer {
 
+	public static final int PORT = 8081;
 	private static ServerSocketFactory SOCKET_FACTORY = ServerSocketFactory.getDefault();
 	public static final String PROTOCOL_MESSAGE_END = "ZZZ";
 	
@@ -54,7 +55,7 @@ public class ChatServer {
 	}
 	
 	public static void main(String[] args) throws IOException, InterruptedException {
-		new ChatServer(8081).startServer();
+		new ChatServer(PORT).startServer();
 	}
 
 }
