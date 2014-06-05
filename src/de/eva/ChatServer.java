@@ -9,6 +9,8 @@ import javax.net.ServerSocketFactory;
 
 public class ChatServer {
 
+	public static final int PORT = 7777;
+
 	private static ServerSocketFactory SOCKET_FACTORY = ServerSocketFactory.getDefault();
 	public static final String PROTOCOL_MESSAGE_END = "ZZZ";
 	private static final String CLOSING_MESSAGE = "close()ZZZ";
@@ -53,7 +55,7 @@ public class ChatServer {
 	}
 
 	public static void main(String[] args) throws IOException {
-		new ChatServer(666).startServer();
+		new ChatServer(PORT).startServer();
 	}
 
 }
