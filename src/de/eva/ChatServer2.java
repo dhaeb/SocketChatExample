@@ -34,7 +34,7 @@ public class ChatServer2 {
 	}
 	
 	public static void main(String[] args) throws IOException {
-		new ChatServer2(666).startServer();
+		new ChatServer2(ChatServer.PORT).startServer();
 	}
 	
 }

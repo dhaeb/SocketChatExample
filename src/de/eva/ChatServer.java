@@ -9,6 +9,8 @@ import javax.net.ServerSocketFactory;
 
 public class ChatServer {
 
+	public static final int PORT = 7777;
+
 	private static ServerSocketFactory SOCKET_FACTORY = ServerSocketFactory.getDefault();
 	
 	private static final int MESSAGE_BUFFER_SIZE = 4096;
@@ -59,7 +61,7 @@ public class ChatServer {
 	}
 
 	public static void main(String[] args) throws IOException {
-		new ChatServer(666).startServer();
+		new ChatServer(PORT).startServer();
 	}
 
 }

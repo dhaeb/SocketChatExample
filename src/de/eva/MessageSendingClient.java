@@ -12,7 +12,7 @@ public class MessageSendingClient {
 	private static final String DEFAULT_ENCODING = "UTF-8";
 
 	public static void main(String[] args) throws IOException {
-		try (Socket clientSideSocket = new Socket("localhost", 666)) {
+		try (Socket clientSideSocket = new Socket("localhost", ChatServer.PORT)) {
 			OutputStream osToServer = clientSideSocket.getOutputStream();
 			System.out.println("Insert message for server: ");
 			sendMessage(osToServer);
