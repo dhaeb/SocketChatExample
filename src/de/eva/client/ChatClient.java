@@ -9,7 +9,6 @@ import java.net.UnknownHostException;
 import java.util.Scanner;
 
 import de.eva.StreamUtils;
-import de.eva.server.ChatServer;
 import de.eva.server.pojo.Client;
 import de.eva.server.pojo.Message;
 import de.eva.sockets.MessageSender;
@@ -18,23 +17,15 @@ public class ChatClient {
 
 	private static final String PROTOCOL_EXTENTION = "ZZZ";
 	private static final String DEFAULT_ENCODING = "UTF-8";
-	private static Client DEFAULT_CLIENT = null;
-
-	static {
-		try {
-			DEFAULT_CLIENT = Client.createClient("server", InetAddress.getLocalHost(), ChatServer.PORT);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
-	}
 
 	private boolean isFinished;
-	private String host;
-	private Integer port;
+	
+	private String clientName;
+	private Client server;
+	
 	private MessageReciever messageReciever;
-
 	private Scanner inputStreamScanner;
-	private String name;
+	private static final int CLIENT_DEFAULT_PORT = 9051;
 
 	public ChatClient() throws Exception {
 		inputStreamScanner = new Scanner(System.in);
@@ -42,9 +33,9 @@ public class ChatClient {
 
 	public void registerAtServer() throws Exception {
 		String registerString = getRegistrationInformation();
-		messageReciever = new MessageReciever(port);
+		messageReciever = new MessageReciever(CLIENT_DEFAULT_PORT);
 		messageReciever.start();
-		try (Socket clientSideSocket = new Socket(DEFAULT_CLIENT.getHost(), DEFAULT_CLIENT.getPort())) {
+		try (Socket clientSideSocket = new Socket(server.getHost(), server.getPort())) {
 			String answer = registerClient(registerString, clientSideSocket);
 			System.out.println(answer);
 			if (answer.contains("successful")) {
@@ -59,19 +50,26 @@ public class ChatClient {
 	}
 
 	private String getRegistrationInformation() throws Exception {
-		String registerString = "@REGISTER ";
 		System.out.println("Welcome! Please specify the host and port of the server!");
 		System.out.println("Host:");
-		host = inputStreamScanner.next();
-		registerString += host + ":";
+		String serverHost = inputStreamScanner.next();
 		System.out.println("Port:");
-		port = inputStreamScanner.nextInt();
-		registerString += port;
+		int serverPort = inputStreamScanner.nextInt();
 		System.out.println("Name:");
-		name = inputStreamScanner.next();
-		registerString = name + "\u00001" + registerString;
+		clientName = inputStreamScanner.next();
+		String clientHost = InetAddress.getByName("localhost").getCanonicalHostName();
+		server = createClientFrom(serverHost, serverPort, clientName);
+		String registerString = String.format("%s\u00001@REGISTER %s:%d", clientName, clientHost, CLIENT_DEFAULT_PORT);
 		System.out.println(registerString);
 		return registerString;
+	}
+
+	private Client createClientFrom(String serverHost, int serverPort, String clientName) throws UnknownHostException {
+		Client c = new Client();
+		c.setHost(InetAddress.getByName(serverHost));
+		c.setName(clientName);
+		c.setPort(serverPort);
+		return c;
 	}
 
 	private String registerClient(String registerString, Socket clientSideSocket) throws IOException, UnsupportedEncodingException {
@@ -96,15 +94,15 @@ public class ChatClient {
 					isFinished = true;
 					startClient();
 				} else {
-					userInput = name + "\u00001" + userInput;
-					new MessageSender(new Message(userInput + "ZZZ", DEFAULT_CLIENT)).sendMessage();
+					userInput = clientName + "\u00001" + userInput;
+					new MessageSender(new Message(userInput + "ZZZ", server)).sendMessage();
 				}
 			}
 		}
 	}
 
 	private void sendCloseMessage() throws IOException {
-		Message msg = new Message(name + "\u00001" + "@CLOSE" + "ZZZ", DEFAULT_CLIENT);
+		Message msg = new Message(clientName + "\u00001" + "@CLOSE" + "ZZZ", server);
 		new MessageSender(msg).sendMessage();
 	}
 

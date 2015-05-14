@@ -38,13 +38,12 @@ public class InputHandler {
 			System.out.println("close");
 			removeClient();
 		} else {
-			request = "[" + name + "]: " + request;
 			if (request.startsWith("@")) {
 				System.out.println("user");
 				sendToSpecifiedUser();
 			} else {
 				if(!request.trim().isEmpty()){
-					System.out.println("broatcast");
+					System.out.println("broadcast");
 					sendBroadcast();
 				} else {
 					System.out.println("[DEBUG] discard empty request from " + name);
@@ -83,19 +82,32 @@ public class InputHandler {
 	}
 
 	private void removeClient() throws UnknownHostException {
-		server.getClients().remove(getClientByName(name));
+		Client clientByName;
+		try {
+			clientByName = getClientByName(name);
+			server.getClients().remove(clientByName);
+		} catch (NoSuchElementException e) {
+			System.err.println(String.format("Try to remove user %s, but this user does not exist on our server!", name));
+		}
 	}
 
 	private void sendToSpecifiedUser() throws InterruptedException {
+		String userName = null; 
 		try {
 			String[] split = request.split(" ");
-			String userName = split[0].substring(1);
+			userName = split[0].substring(1);
 			System.out.println("send request to user: " + userName);
 			Client targetClient = getClientByName(userName);
-			server.getMessages().put(new Message(request.substring(split[0].length()), targetClient));
+			server.getMessages().put(new Message(String.format("[%s] %s", name, request.replace(replaceAtUsernamePattern(), "")), targetClient));
 		} catch (NoSuchElementException e) {
-			e.printStackTrace();
+			String message = "There was no client named " + userName;
+			System.err.println(message);
+			server.getMessages().put(new Message(message, getClientByName(name)));
 		}
+	}
+
+	private String replaceAtUsernamePattern() {
+		return "@" + name + " ";
 	}
 
 	private void sendBroadcast() throws InterruptedException {
