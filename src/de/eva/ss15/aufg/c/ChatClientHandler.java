@@ -11,7 +11,7 @@ final class ChatClientHandler implements Runnable {
 	private final CommandInterpreter interpreter = new CommandInterpreter();
 	private ExecutorService threadPool;
 
-	ChatClientHandler(Socket clientConnectionSocket, CommandHandler commandHandler, ExecutorService threadPool) {
+	public ChatClientHandler(Socket clientConnectionSocket, CommandHandler commandHandler, ExecutorService threadPool) {
 		this.clientConnectionSocket = clientConnectionSocket;
 		this.commandHandler = commandHandler;
 		this.threadPool = threadPool;
