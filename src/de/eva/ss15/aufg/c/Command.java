@@ -2,11 +2,24 @@ package de.eva.ss15.aufg.c;
 
 import java.io.UnsupportedEncodingException;
 
+/**
+ * Iterface für alle Nachrichten, die zwischen den Clienten und dem Server ausgetauscht werden.
+ * 
+ * @author dhaeb
+ *
+ */
 public interface Command {
 
+	/**
+	 * Unser definiertes Protokoll Suffix, mit welchem das Ende / der Anfang zweier Nachrichten identifiziert werden kann 
+	 */
 	public static final String PROTOCOL_SUFFIX = Constants.DELIMITER;
 
 	String getContent();
+	
+	/**
+	 * @return byterepräsentation des Objektes (ohne Java-Serialisierung, um Programm nicht Java-Abhängig zu machen
+	 */
 	default byte[] toBytes() {
 		try {
 			return (getContent() + PROTOCOL_SUFFIX).getBytes("UTF-8");
@@ -16,7 +29,7 @@ public interface Command {
 	}
 	
 	/**
-	 * Broadcast Fall
+	 * Broadcast Nachricht
 	 * 
 	 * @author dhaeb
 	 *
@@ -37,7 +50,7 @@ public interface Command {
 	}
 	
 	/**
-	 * Dedizierte Nutzernachricht 
+	 * Nachricht an speziellen Nutzer 
 	 * 
 	 * @author dhaeb
 	 *
@@ -68,6 +81,8 @@ public interface Command {
 	
 	/**
 	 * Dient dazu, die beim Server angemeldeten Nutzer zu erfahren.
+	 * Wenn diese Nachricht bei einem Clienten ankommt, soll der Content der Nachricht ausgegeben werden, 
+	 * welche die registrierten Nutzernamen enthält.
 	 * 
 	 * @author dhaeb
 	 *
@@ -78,6 +93,12 @@ public interface Command {
 		}
 	}
 	
+	/**
+	 * Kommando zur Registrierung eines Nutzers.
+	 * 
+	 * @author dhaeb
+	 *
+	 */
 	public static class RegisterCommand extends MessageCommand {
 
 		private String name;

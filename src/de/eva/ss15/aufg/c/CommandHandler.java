@@ -15,9 +15,16 @@ import de.eva.ss15.aufg.c.Command.MessageCommand;
 import de.eva.ss15.aufg.c.Command.RegisterCommand;
 import de.eva.ss15.aufg.c.Command.ToSpecialUserCommand;
 
+/**
+ * Klasse, die die serverseitige Bearbeitung eines Kommandos verwaltet. 
+ * 
+ * @author dhaeb
+ *
+ */
 // Thread safe!!!
 public class CommandHandler {
 
+	// bidirectional mapping to get the user name from each socket and to get a socket by specific user name
 	private Map<Socket, String> registeredSockets = new ConcurrentHashMap<>();
 	private Map<String, Socket> registeredUsers = new ConcurrentHashMap<>();
 	
@@ -25,6 +32,14 @@ public class CommandHandler {
 		return registeredSockets.values();
 	}
 	
+	/**
+	 * Methode, die ein Kommando vom Clienten bearbeitet und eine Aufgabe in Form eines Runnables zurück gibt.
+	 * Diese Aufgabe wird dann nebenläufig vom Server bearbeitet. 
+	 * 
+	 * @param command Kommando vom Clienten
+	 * @param from  Socketverbindung zum Clienten
+	 * @return Aufgabe für den Server, die der Client fordert
+	 */
 	public Runnable handle(Command command, Socket from) {
 		boolean userIsRegisteredOrWantsToRegister = registeredSockets.containsKey(from) || command instanceof RegisterCommand;
 		if(userIsRegisteredOrWantsToRegister){
@@ -64,8 +79,10 @@ public class CommandHandler {
 					} if(isSocketAlreadyRegistered) {
 						sendMessage("You cannot register twice!", from.getOutputStream());
 					} else {
-						registeredSockets.put(from, userName);
-						registeredUsers.put(userName, from);
+						synchronized (this) {
+							registeredSockets.put(from, userName);
+							registeredUsers.put(userName, from);
+						}
 						String reply = String.format("[Server] You are registered %s! Type @LIST to see all users!", userName);  
 						sendMessage(reply, from.getOutputStream());
 					}
@@ -110,10 +127,15 @@ public class CommandHandler {
 				});
 			};
 		} else {
-			throw new RuntimeException("There is serious truble...");
+			throw new RuntimeException("There is serious trouble...");
 		}
 	}
 
+	/**
+	 * Wenn ein Socket Probleme bereitet, kann er hierdurch entfernt werden.
+	 * 
+	 * @param s Verbindung s
+	 */
 	public void removeUserSocket(Socket s) {
 		String user = registeredSockets.get(s);
 		System.out.println("removing user " + user);

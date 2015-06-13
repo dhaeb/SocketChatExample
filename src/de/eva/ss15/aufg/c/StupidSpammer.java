@@ -8,6 +8,12 @@ import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * Testanwendung, die sich mit dem ChatServer verbindet und durch Spamming den Chat unbrauchbar macht. 
+ * 
+ * @author dhaeb
+ *
+ */
 public class StupidSpammer {
 
 	public static void main(String[] args) throws UnknownHostException, IOException {

@@ -4,6 +4,17 @@ import java.net.Socket;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 
+/**
+ * Kontrollfluss zur Überwachung eines Sockets auf Eingaben.
+ * Bindet einen ganzen Thread an sich - auch wenn dieser durch I/O teilweise nur wartet.
+ * Die Chat-Anwendung muss daher so viele Threads wie user bereithalten, 
+ * damit es nicht zu Engpaessen in der Verarbeitung kommen kann.
+ * 
+ * Hier waere ein event-basierte Verarbeitung (wenn eine neue Nachricht eintrifft, nutze einen Thread zur Bearbeitung) effektiver.
+ * 
+ * @author dhaeb
+ *
+ */
 final class ChatClientHandler implements Runnable {
 	
 	private final Socket clientConnectionSocket;
@@ -20,8 +31,8 @@ final class ChatClientHandler implements Runnable {
 	@Override
 	public void run() {
 		try {
-			try(Scanner scanner = new Scanner(clientConnectionSocket.getInputStream())){
-				scanner.useDelimiter(Constants.DELIMITER);
+			try(Scanner scanner = new Scanner(clientConnectionSocket.getInputStream())){ // zum ueberwachen, ob Kommandos von Client gesendet werden 
+				scanner.useDelimiter(Constants.DELIMITER); // protokoll beachten (ZZZ)!
 				while(!Thread.currentThread().isInterrupted()){
 					String currentCommand = scanner.next();
 					System.out.println("interpreting... " + currentCommand);

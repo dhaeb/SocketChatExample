@@ -4,12 +4,28 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Einfacher String zu Command Umwandler. 
+ * Wird von Server und Client verwendet, 
+ * um gesendete Strings über das Netzwerk bzw. Nutzereingaben in ein Command zu transferieren.
+ * 
+ * @author dhaeb
+ *
+ */
 public class CommandInterpreter {
+	
 	private Pattern REGISTER_PATTERN = Pattern.compile("@REGISTER\\s(.+)");
 	private Pattern LIST_PATTERN = Pattern.compile("@LIST");
 	private Pattern TO_SPECIAL_USER_PATTERN = Pattern.compile("@(.+?)\\s(.+)");
 	private Pattern REST = Pattern.compile("(.*)");
 	
+	/**
+	 * Erzeugt aus einem String ein command. 
+	 * Ein <code>@List</code> erzeugt beispielsweise ein ListCommand.
+	 * 
+	 * @param currentCommand
+	 * @return Das interpretierte Command-Object, erzeugt aus dem String
+	 */
 	public Command interpret(String currentCommand) {
 		return tryPatternInOrder(currentCommand,
 				new Pair<Pattern, Function<Matcher, Command>>(REGISTER_PATTERN, (m) -> new Command.RegisterCommand(m.group(1))),
