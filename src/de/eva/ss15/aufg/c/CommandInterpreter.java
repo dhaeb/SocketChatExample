@@ -5,15 +5,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CommandInterpreter {
-
-	private Pattern REGISTER_PATTERN = Pattern.compile("@REGISTER\\s(.+):(\\d+)\\s(.+)");
+	private Pattern REGISTER_PATTERN = Pattern.compile("@REGISTER\\s(.+)");
 	private Pattern LIST_PATTERN = Pattern.compile("@LIST");
 	private Pattern TO_SPECIAL_USER_PATTERN = Pattern.compile("@(.+?)\\s(.+)");
-	private Pattern REST = Pattern.compile("(.+)");
+	private Pattern REST = Pattern.compile("(.*)");
 	
 	public Command interpret(String currentCommand) {
 		return tryPatternInOrder(currentCommand,
-				new Pair<Pattern, Function<Matcher, Command>>(REGISTER_PATTERN, (m) -> new Command.RegisterCommand(m.group(1), Integer.parseInt(m.group(2)), m.group(3))),
+				new Pair<Pattern, Function<Matcher, Command>>(REGISTER_PATTERN, (m) -> new Command.RegisterCommand(m.group(1))),
 				new Pair<Pattern, Function<Matcher, Command>>(LIST_PATTERN, (m) -> new Command.ListCommand()),
 				new Pair<Pattern, Function<Matcher, Command>>(TO_SPECIAL_USER_PATTERN, (m) -> new Command.ToSpecialUserCommand(m.group(2), m.group(1))),
 				new Pair<Pattern, Function<Matcher, Command>>(REST, (m) -> new Command.MessageCommand(m.group(1)))

@@ -19,7 +19,8 @@ public class Server {
 			String echoable = "ECHO " + br.readLine();
 			System.out.println(echoable);
 			OutputStream outputStream = clientSocket.getOutputStream();
-			outputStream.write(echoable.getBytes());
+			byte[] sendable = echoable.getBytes();
+			outputStream.write(sendable);
 		}
 		ssocket.close();
 	}

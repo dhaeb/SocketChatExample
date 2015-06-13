@@ -12,10 +12,14 @@ public class Client {
 	public static void main(String[] args) throws UnknownHostException, IOException {
 		System.out.println("Please type a message in: ");
 		try(Scanner scanner = new Scanner(System.in)){
+			scanner.useDelimiter("\n");
 			String userInput = scanner.next();
-			try(Socket socket = new Socket(InetAddress.getLocalHost(), Server.PORT)){
+			InetAddress localHost = InetAddress.getLocalHost();
+			int port = Server.PORT;
+			try(Socket socket = new Socket(localHost, port)){
 				OutputStream os = socket.getOutputStream();
-				os.write(userInput.getBytes());
+				byte[] bytes = userInput.getBytes();
+				os.write(bytes);
 			}
 		}
 	}

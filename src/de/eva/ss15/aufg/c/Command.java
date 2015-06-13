@@ -1,8 +1,6 @@
 package de.eva.ss15.aufg.c;
 
 import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 public interface Command {
 
@@ -17,6 +15,12 @@ public interface Command {
 		}
 	}
 	
+	/**
+	 * Broadcast Fall
+	 * 
+	 * @author dhaeb
+	 *
+	 */
 	public static class MessageCommand implements Command {
 
 		private String content;
@@ -32,6 +36,12 @@ public interface Command {
 		
 	}
 	
+	/**
+	 * Dedizierte Nutzernachricht 
+	 * 
+	 * @author dhaeb
+	 *
+	 */
 	public static class ToSpecialUserCommand extends MessageCommand {
 		public ToSpecialUserCommand(String content, String to) {
 			super(content);
@@ -56,6 +66,12 @@ public interface Command {
 		}
 	}
 	
+	/**
+	 * Dient dazu, die beim Server angemeldeten Nutzer zu erfahren.
+	 * 
+	 * @author dhaeb
+	 *
+	 */
 	public static class ListCommand extends MessageCommand {
 		public ListCommand() {
 			super("@LIST");
@@ -64,39 +80,13 @@ public interface Command {
 	
 	public static class RegisterCommand extends MessageCommand {
 
-		public static int DEFAULT_PORT = 4004;
-		
-		private String host;
-		private int port;
 		private String name;
 		
 		public RegisterCommand(String name){
-			this(getLocalHostSilent().getHostAddress(), DEFAULT_PORT, name);
-		}
-		
-		public RegisterCommand(String host, int port, String name)  {
-			super(String.format("@REGISTER %s:%d %s", host, port, name));
-			this.host = host;
-			this.port = port;
+			super(String.format("@REGISTER %s", name));
 			this.name = name;
 		}
-
-		private static InetAddress getLocalHostSilent() {
-			try {
-				return InetAddress.getLocalHost();
-			} catch (UnknownHostException e) {
-				throw new RuntimeException(e);
-			}
-		}
-
-		public String getHost() {
-			return host;
-		}
-
-		public int getPort() {
-			return port;
-		}
-
+		
 		public String getName() {
 			return name;
 		}

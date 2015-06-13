@@ -17,9 +17,9 @@ public class Client {
 			String userInput = scanner.next() + "\n";
 			try(Socket socket = new Socket(InetAddress.getLocalHost(), Server.PORT)){
 				OutputStream os = socket.getOutputStream();
-				BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				os.write(userInput.getBytes());
 				os.flush();
+				BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				String serverAnswer = br.readLine();
 				System.out.println("server Antwort: \n" + serverAnswer);
 			}
